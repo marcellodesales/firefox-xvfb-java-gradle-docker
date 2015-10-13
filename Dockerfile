@@ -1,5 +1,18 @@
-FROM java:8-jdk
-MAINTAINER Marcello de Sales <marcello.desales@gmail.com>
+FROM sitespeedio/firefox:41.0
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get -y install software-properties-common unzip
+
+# Install Java.
+RUN \
+  echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
+  add-apt-repository -y ppa:webupd8team/java && \
+  apt-get update && \
+  apt-get install -y oracle-java8-installer && \
+  rm -rf /var/lib/apt/lists/* && \
+  rm -rf /var/cache/oracle-jdk8-installer
+
+# Define commonly used JAVA_HOME variable
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
 # Gradle
 ENV GRADLE_VERSION 2.7
@@ -18,12 +31,11 @@ ENV GRADLE_HOME /usr/src/gradle
 ENV PATH $PATH:$GRADLE_HOME/bin
 
 # Caches
-VOLUME /root/.gradle
-VOLUME /root/.m2
+VOLUME /root/.gradle/caches
+VOLUME /root/.m2/repository
 
+USER $USER
 # Default command is "/usr/bin/gradle -version" on /usr/bin/app dir
 # (ie. Mount project at /usr/bin/app "docker --rm -v /path/to/app:/usr/bin/app gradle <command>")
-VOLUME /usr/bin/app
+#VOLUME /usr/bin/app
 WORKDIR /usr/bin/app
-ENTRYPOINT gradle
-CMD -version
