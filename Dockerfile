@@ -32,6 +32,7 @@ ENV PATH $PATH:$GRADLE_HOME/bin
 
 # Caches
 VOLUME /root/.gradle/caches
+VOLUME /root/.m2/repository
 
 USER $USER
 # Default command is "/usr/bin/gradle -version" on /usr/bin/app dir
